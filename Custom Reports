@@ -20,3 +20,36 @@ table "border=1 " of concatenations of trs of tds of unique values of (item 0 of
 table "border=1 " of concatenations of trs of tds of unique values of (item 0 of it) of (name of it, tds of name of source fixlet of it) of it whose (name of it != name of source fixlet of it) of (components of component groups of bes fixlets whose (baseline flag of it AND name of it contains "Hertz" and exists taken action whose (state of it = "Open") of it))
 ?>
 
+
+Dedicated Relay Reporting Status  <Filter Relay Group>
+
+<h2>Offline Top Level Relay/s</h2>
+
+<?relevance
+table "border=5 " of concatenations of trs of tds of names of computers of results whose(3*hour  < (now - (value of it as time))) of bes property "Last Report Time"
+
+?>
+
+<h2>Online Top Level Relay/s</h2>
+
+<?relevance
+table "border=5 " of concatenations of trs of tds of names of computers of results whose(3*hour  > (now - (value of it as time))) of bes property "Last Report Time"
+
+?>
+
+
+Installation Commands for SWD Tasks
+
+<?relevance
+(name of it, values of mime fields whose (name of it = "x-fixlet-swdCommandOverride") of it) of bes fixlets whose (exists mime field "x-fixlet-swdCommandOverride" of it)
+
+?>
+
+
+Patch Remediation Report - 60 Days
+
+<?relevance
+
+(names of computers of it, names of fixlet of it, source release date of fixlet of it, source severity of fixlet of it, last became nonrelevant of it) of results from (bes fixlets whose (source severity of it as lowercase = "critical" AND source release date of it > (current date - 60*day) and fixlet flag of it = true)) whose ( exists last became relevant of it and relevant flag of it = false) of bes computers
+
+?>
