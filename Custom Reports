@@ -46,3 +46,25 @@ Patch Remediation Report - 60 Days
 <?relevance
 (names of computers of it, names of fixlet of it, source release date of fixlet of it, source severity of fixlet of it, last became nonrelevant of it) of results from (bes fixlets whose (source severity of it as lowercase = "critical" AND source release date of it > (current date - 60*day) and fixlet flag of it = true)) whose ( exists last became relevant of it and relevant flag of it = false) of bes computers
 ?>
+
+
+Action Completion Status
+
+<h3>BFI Action Status</h1>
+
+<?relevance
+table of concatenation of trs of (td of item 0 of it & td of item 1 of it & td of item 2 of it & td of item 3 of it) of ( ( b of "ID" as html, b of "Action Name", b of "Start Date" as html,  b of "Results" as html ); 
+( id of it as string as html, link of it as html, start dates of it as string  as html,  concatenation " | " of (multiplicity of it as string & "  " & it & " " as html) of unique values of (statuses of results of it as string) ) of bes actions whose (state of it = "Open" and (if exists parent group of it then state of parent group of it = "Open" else true) and true))
+?>
+
+<h3>Completion Percentage</h1>
+
+<?relevance
+(name of it, (it as string & "%25") of ((100 * number of statuses whose(it as string = "Fixed" OR it as string = "Completed") of results of it) / (number of statuses of results of it))) of bes actions whose(exists statuses of results of it and state of it = "Open")
+?>
+
+Failed Actions
+
+<?Relevance 
+((name of it, id of it) of computer of it, (name of it, id of it, (if exists source fixlet of it then (if baseline flag of source fixlet of it then "baseline" else "fixlet") else (if exists parent group of it and exists source fixlet of parent group of it and baseline flag of source fixlet of parent group of it then "member of " & ((name of it, id of it) of parent group of it as string) else "action") )) of action of it) of results whose (status of it is bes action status failed) of bes actions whose (time issued of it > (now-30*day)) ?>
+end
