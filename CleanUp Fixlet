@@ -1,0 +1,53 @@
+Relevance
+
+#########################################
+not exists last active time of action or ( absolute value of ( now - last active time of action ) ) > 1 * second
+#########################################
+
+
+//folder delete "C:\BigFixCleanUpActivity"
+
+
+//*Create Folder*/
+folder create "C:\BigFixCleanUpActivity"
+
+//*Clear Windows Temp Folder*/
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\Temp.log
+waithidden cmd.exe /C dir C:\Windows\Temp >> C:\BigFixCleanUpActivity\Temp.log
+waithidden powershell -ExecutionPolicy Bypass -command "Remove-Item -path C:\Windows\Temp -Recurse" >> C:\BigFixCleanUpActivity\Temp.log
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\Temp.log
+waithidden cmd.exe /C dir C:\Windows\Temp >> C:\BigFixCleanUpActivity\Temp.log
+
+//*Clear Windows Prefetch Folder*/
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\Prefetch.log
+waithidden cmd.exe /C dir C:\Windows\Prefetch >> C:\BigFixCleanUpActivity\Prefetch.log
+waithidden powershell -ExecutionPolicy Bypass -command "Remove-Item -path C:\Windows\Prefetch -Recurse" >> C:\BigFixCleanUpActivity\Prefetch.log
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\Prefetch.log
+waithidden cmd.exe /C dir C:\Windows\Prefetch >> C:\BigFixCleanUpActivity\Prefetch.log
+
+//*Clear AppData Local Temp Folder*/
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\Local_Temp.log 
+waithidden powershell -ExecutionPolicy Bypass -command "Remove-Item -path C:\Users\*\AppData\Local\Temp -Recurse" >> C:\BigFixCleanUpActivity\Local_Temp.log 
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\Local_Temp.log
+
+//*Clear DNS Client Cache*/
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\DNSFlush.log
+waithidden cmd.exe /C ipconfig /displaydns >> C:\BigFixCleanUpActivity\DNSFlush.log
+waithidden cmd.exe /C ipconfig /flushdns >> C:\BigFixCleanUpActivity\DNSFlush.log
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\DNSFlush.log
+waithidden cmd.exe /C ipconfig /displaydns >> C:\BigFixCleanUpActivity\DNSFlush.log
+
+//*Force GPUpdate*/
+
+waithidden cmd.exe /C gpresult /h C:\BigFixCleanUpActivity\beforegpupdate.html
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\GPUpdate.log
+waithidden powershell -ExecutionPolicy Bypass -command "GPUpdate /Force" >> C:\BigFixCleanUpActivity\GPUpdate.log
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\GPUpdate.log
+waithidden cmd.exe /C gpresult /h C:\BigFixCleanUpActivity\aftergpupdate.html
+
+//*Clear Recycle Bin Cleanup*/
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\RecycleBin.log
+waithidden cmd.exe /C dir /s C:\$Recycle.bin >> C:\BigFixCleanUpActivity\RecycleBin.log
+waithidden cmd.exe /c rd /s /q %systemdrive%\$Recycle.bin >> C:\BigFixCleanUpActivity\RecycleBin.log
+waithidden cmd.exe /C echo %date% %time% >> C:\BigFixCleanUpActivity\RecycleBin.log
+waithidden cmd.exe /C dir /s C:\$Recycle.bin >> C:\BigFixCleanUpActivity\RecycleBin.log
