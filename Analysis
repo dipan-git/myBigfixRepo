@@ -39,3 +39,14 @@ if exists folder "c:\Program Files (x86)\Bigfix Enterprise" then ((pathname of i
 Relay Drive Free Space
 
 (name of it & " - " & (free space of it / 1024 / 1024) as string & " MB free") of drive of (folder (value of setting "_BESRelay_HTTPServer_ServerRootPath" of client)) as string
+
+
+IE Version
+
+if (exists regapp "iexplore.exe") then ((value "svcversion" of it | value "version" of it) of key "HKLM\Software\Microsoft\Internet Explorer" of registry as string) else ("Not Installed")
+
+
+USB Device Detection
+
+if (exists wmi) then (string values whose (it != "Generic volume" AND it != "HID-compliant consumer control device" AND it != "HID-compliant device") of selects (("Caption from Win32_PnPEntity where DeviceID='" & it as string & "'") of preceding texts of lasts "%22" of following texts of lasts "=%22" of (string values whose (it does not contain "USB\\") of selects "Dependent from Win32_USBControllerDevice" of wmi )) of wmi) else ("N/A")
+
