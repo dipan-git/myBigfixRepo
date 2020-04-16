@@ -1,5 +1,0 @@
-if (exists setting "Location By IP Range" of client) 
-setting  "_BESRelay_Register_Affiliation_AdvertisementList"="{value of setting "Location By IP Range" of client}" on "{now}" for client
-else
-setting "_BESRelay_Register_Affiliation_AdvertisementList"="" on "{now}" for client		
-endif

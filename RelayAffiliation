@@ -1,0 +1,20 @@
+Relay Advertisement
+
+if (exists setting "Location By IP Range" of client) 
+setting  "_BESRelay_Register_Affiliation_AdvertisementList"="{value of setting "Location By IP Range" of client}" on "{now}" for client
+else
+setting "_BESRelay_Register_Affiliation_AdvertisementList"="" on "{now}" for client		
+endif
+
+
+Client Seeklist
+
+setting "__RelaySelect_Automatic"="1" on "{now}" for client
+if {(value of settings "Location By IP Range" of client) = "###"}
+setting "_BESClient_Register_Affiliation_SeekList"="{(value of settings "Location By IP Range" of client)}" on "{now}" for client
+elseif {(value of setting "Location By IP Range" of client equals "")}
+setting "_BESClient_Register_Affiliation_SeekList"="###{computer id mod 2}" on "{now}" for client
+else
+setting "_BESClient_Register_Affiliation_SeekList"="{(value of settings "Location By IP Range" of client)}" on "{now}" for client
+endif
+relay select
