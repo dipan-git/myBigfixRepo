@@ -13,9 +13,9 @@ Fixlets out-of-sync
 <h2> Fixlets Out-of-Sync </h2>
 
 <?relevance
-table "border=1 " of concatenations of trs of tds of unique values of (item 0 of it) of (name of it, tds of name of source fixlet of it) of it whose (relevance of it != relevance of source fixlet of it) of (components of component groups of bes fixlets whose (baseline flag of it AND name of it contains "Hertz" and exists taken action whose (state of it = "Open") of it));
-table "border=1 " of concatenations of trs of tds of unique values of (item 0 of it) of (name of it, tds of name of source fixlet of it) of it whose (script of action of it != script of action of source fixlet of it) of (components of component groups of bes fixlets whose (baseline flag of it AND name of it contains "Hertz" and exists taken action whose (state of it = "Open") of it));
-table "border=1 " of concatenations of trs of tds of unique values of (item 0 of it) of (name of it, tds of name of source fixlet of it) of it whose (name of it != name of source fixlet of it) of (components of component groups of bes fixlets whose (baseline flag of it AND name of it contains "Hertz" and exists taken action whose (state of it = "Open") of it))
+table "border=1 " of concatenations of trs of tds of unique values of (item 0 of it) of (name of it, tds of name of source fixlet of it) of it whose (relevance of it != relevance of source fixlet of it) of (components of component groups of bes fixlets whose (baseline flag of it AND name of it contains "" and exists taken action whose (state of it = "Open") of it));
+table "border=1 " of concatenations of trs of tds of unique values of (item 0 of it) of (name of it, tds of name of source fixlet of it) of it whose (script of action of it != script of action of source fixlet of it) of (components of component groups of bes fixlets whose (baseline flag of it AND name of it contains "" and exists taken action whose (state of it = "Open") of it));
+table "border=1 " of concatenations of trs of tds of unique values of (item 0 of it) of (name of it, tds of name of source fixlet of it) of it whose (name of it != name of source fixlet of it) of (components of component groups of bes fixlets whose (baseline flag of it AND name of it contains "" and exists taken action whose (state of it = "Open") of it))
 ?>
 
 
