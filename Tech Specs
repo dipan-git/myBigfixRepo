@@ -1,0 +1,166 @@
+BigFix Domain	Knowledge Transfer [Provide documentation wherever possible]
+BigFix Server Architecture	Please provide the list of Existing environments (QA, Dev, Prod)
+	Provide BigFix Network Diagram (specify location wise)
+	Explain the connectivity (root server, top level relay server and site level relay server)
+	Is that BigFix proxy configured
+	Is that DSA architecture
+	BigFix OS platform
+	How does Database installed and configured
+	BigFix server, relay and client encrypted?
+	Is there any advance option are enabled in bigfix administration tool?
+	What is the replication interval time?
+	What is the current security level in bigfix?
+	How does BESLicenseAuthorization configured?
+	Web report installed in the same server?
+	What is the BES server download catch size?
+	Is that Download throttling enabled? Throttle outgoing download traffic configured?
+	What is the fillDB Folder size?
+	Is that any Set Database Insertion Level configured?
+	What is the current BigFix Server Upload Manager Setting?
+	What is the frequency of audit cleaner activity?
+	What is the frequency of SQL re-inducting?
+	What is the current FillDB current usage? Is there any recent incident raised?
+	Describe BigFix module are used in Hertz.
+	Please list down custom analysis, Fixlet developed for Hertz.
+	Is there any frequency to activating new analyses?
+	Are we using any IBM BigFix APIs?
+	Is Virtual Managers configured? If so, How many?
+	Is Four Eyes Approval feature implemented in Hertz?
+	Is there any custom site created? If so, provide the list.
+	
+BigFix Console	How many consoles are installed in Hertz environment (specify location wise)?
+	How many console servers available? How many concurrent login?
+	What is the refresh list time?
+	What is the time frame of client computer send heartbeat every minutes and mark as half line after?
+	How many master operators?
+	What is the process for providing console access?
+	Is that WebUI apps configured?
+	
+BigFix User and Roles	Provide LDAP configurations (Primary and Backup server).
+	Provide LDAP base DN.
+	Provide the list of BigFix available operators.
+	Provide the list of bigfix roles (computer assignment ,sites and operators)
+	Provide the list of LDAP groups.
+	
+BigFix Relay	Provide Relay architecture diagram.
+	Provide list of relays servers (location wise )
+	Provides how many top level relays, site level relay are configured?
+	Do we have internet relay configured?
+	What is the BES server download catch size?
+	Is that Download throttling enabled? Throttle outgoing download traffic configured?
+	Is that DNS Override configured for SLR?
+	Do we have any Role/Site Tagging for TLR and SLR? (Through the use of custom client settings, Hertz may able to “tag” endpoints based on their role, location, asset tag/serial number, etc.   These custom settings can be used to drive computer group membership, fixlet/task relevance, and more.)
+	What is the current BigFix Relay Upload Manager Setting?
+	Is that BES Relay Diagnostics enabled?
+	What is the current BigFix Server Upload Manager Setting?
+	Provide the Relay Buffer Dir. Size?
+	What are the relay specific policies available in Hertz?
+	Provide each relay server reporting targets (count).
+	
+BigFix client	Please provide the list of subnets for Asset Discovery (N Map)
+	What is the current Client version for the agent roll out?
+	How is the agent being deployed on the Secured Network?
+	What are the different flavors of OS where the BigFix client needs to be installed?
+	How the client relay selection method? (Specify manual , automatic and relay affiliation )
+	Do we have any Role/Site Tagging?
+	How the agent is role out? Any custom .CFG file included during the agent deployment?
+	Is that Command polling is a feature enabled?
+	What is the current download cache limit? (download Cache and PreCacheStageDiskLimit)
+	What is the BESClient Report Minimum Interval time?
+	How often the agent registers to update IP address and get a new license number? (specify BES Client Register Interval Seconds)
+	What is Relay Selection Max TTL to Ping?
+	What is the Relay Selection Minimum Retry interval?
+	What is the Relay Selection Failover Relay interval?
+	How the current BES client role out is happening?
+	Is that Relay Affiliation Configured?
+	Are we using BigFix Labs? If so, provide list tools.
+	Do we have Mac environment in Hertz?
+	
+BigFix server Maintenance	What is the maintenance window for BES root server, Relay?
+	Is there any specific maintenance window for rebooting root servers?
+	Please explain change window process for Bigfix server maintenance.
+	What is the Hertz frequency of upgrading BES root servers?
+	Please provide the current maintenance activity for Prod, Dev and QA.
+	
+BigFix Web Report	Provide the list of the reports that needs to be deliver to the client (daily, weekly and monthly)
+	Provide list of custom report which is develop for Hertz environment.
+	Is SMTP is configured?
+	Is there any scheduled reports triggered using email notification?
+	Is that LDAP integrated?
+	What is the concurrent user logins?
+	Provide list of web report users with assigned rights?
+	What is the procedure for enabling users in web report?
+	Is there any graphical report configured?
+	Please provide the list of address book configured?
+	Provide list of roles in web report.
+	Is there any UI customized in web Report.
+	Is that SSL is configured? If so, provide the certificate information.
+	
+BigFix asset inventory	Please provide the list of subnets for Asset Discovery (N Map)
+	Is Nmap is configured? If so please provide Nmap architecture
+	Please list down custom analysis, Fixlet developed for inventory.
+	List down BigFix computer groups (manual, automatic).
+	Is Wake on LAN is configured? If so please provide require insight.
+	How many N-Map Scan points are available in Hertz Environment?
+	List down asset inventory related activity part of our current deliverables.
+	
+BigFix Inventory (BFI)	Provide BigFix inventory architecture  (Existing Environment)
+	Provide asset information where scanner agents are installed?
+	Provide catalog version for (Existing Environment)
+	
+BigFix Compliance (SCA)	Provide BigFix Compliance architecture  (Existing Environment)
+	Is GTS repository subscribed in Hertz environment?
+	Is there any custom site created? If so, provide the list.
+	Provide list of computer groups.
+	Provide details about LDAP configuration.
+	Provide the list of reports that needs to be deliver to the client (daily, weekly and monthly)
+	Provide list of custom report which is develop for Hertz environment.
+	Is SMTP is configured?
+	Is there any scheduled reports triggered using email notification?
+	What is the concurrent user logins?
+	Provide list of Compliance users with assigned roles?
+	What is the procedure for enabling users in Compliance?
+	Is there any UI customized in Compliance.
+	Is that SSL is configured? If so, provide the certificate information.
+	
+BigFix Patch management	Provide the frequency of Microsoft patches deployed to the servers using BigFix (Existing Environment)
+	what is the frequency of creating and deleting baselines? Who will be responsible for creating baselines.
+	How does the baseline created?
+	Provide the plug-in configuration details for RHEL, AIX, Solaris and other OS types.
+	Provide the frequency of RHEL, AIX, Solaris patches deployed to the servers(Existing Environment)
+	Provide the list of patch reports that needs to be deliver to the client (daily, weekly and monthly)
+	Are we using BigFix Maintenance Window Management?
+	Please provide the list of Custom Fixlets and Tasks created for Hertz?
+	Provide list of custom patch reports which is develop for Hertz environment.
+	
+BigFix Software Distribution	Is there self-service portal configured
+	Provides the list of custom packages created using software distribution.
+	Is client dashboard enabled on all targets?
+	Is there software packages are automated? Any actions are running as a policy?
+	Is there IBM BigFix Support Center Dash Borad configured? If so, provide offeres and Available softwares Info
+	Is there Application Management Group Configured? If so, list down those Groups.
+	whom need to approch for getting new packages to create software distribution?
+	
+BigFix General activities.	Is OSD configured in Hertz environment?
+	Is remote controller configured in Hertz environment?
+	Is power management configured in Hertz environment?
+	Provide current open PMRs and critical tasks which needs to be address.
+	Server automation configured in Hertz environment?
+	
+BigFix Access Level	Provide the list of Master operators info
+	How does the access created? What is the procedure for enabling operators in console?
+	Provide all service account to access DB, Root, Relay servers.
+	Provide SQL DB users. ( To connect DB as well BigFix Admin tool)
+	Provide all plug-ins users (for patching for all the OS platforms, VM, LDAP and SMTP)
+	Provide password for BESLicenseAuthorization
+	Provide list of BES license files
+	Provide list of users which needs be aware for BigFix day to day activities.
+	
+BigFix Remote Control	Is BigFix Remote control configured?
+	How many Remote control controllers are installed in Hertz Environment?
+	How many Remote control targets are installed in Hertz Environment?
+	Is BigFix Remote Control websphere approach implemented?
+	Provide information of Remote Control Brokers?
+	Provide information of Remote Control gateways?
+	is SSH configured for Remote Control Websphere approach?
+	
