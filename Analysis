@@ -50,3 +50,11 @@ USB Device Detection
 
 if (exists wmi) then (string values whose (it != "Generic volume" AND it != "HID-compliant consumer control device" AND it != "HID-compliant device") of selects (("Caption from Win32_PnPEntity where DeviceID='" & it as string & "'") of preceding texts of lasts "%22" of following texts of lasts "=%22" of (string values whose (it does not contain "USB\\") of selects "Dependent from Win32_USBControllerDevice" of wmi )) of wmi) else ("N/A")
 
+
+Check Service
+
+if not exists service "CCmExec" then "SMS\SCCM not installed" else if exists service "CCmExec" then if exists running service "CCmExec" then "SMS\SCCM installed and running" else "SMS\SCCM installed but not running" else "<unknown>"
+
+Check Service Version
+
+if exists service "CCmExec" whose (exists version of it) then version of service "CCmExec" as string else "N/A"
