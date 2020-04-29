@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Archive Files/Logs from Any Folder</Title>
+		<Description><![CDATA[
+<DIV class=FixletMessage>
+<TABLE><TBODY><TR><TD><P><FONT size=2><B>Archive Log/Other Related Files on the selected Windows computers. </P></FONT></LI></UL></TD></TR></TBODY></TABLE>
+</DIV>
+<DIV class=FixletProperty>
+</DIV>
+]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>version of client = "9.5.9"</Relevance>
+		<Category>Log/File Collection</Category>
+		<MIMEField>
+			<Name>x-fixlet-first-propagation</Name>
+			<Value>Tue, 10 Apr 2018 12:17:38 +00000</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-domain_attributes</Name>
+			<Value>Extract Logs/Files</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 10 Apr 2018 12:17:38 +0000</Value>
+		</MIMEField>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> Path for File Extraction to be prompted</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[action parameter query "File/Log Location" with description "Please enter the path from where you would like to extract the files:"
+setting "_BESClient_ArchiveManager_OperatingMode"="2" on "{now}" for client
+setting "_BESClient_ArchiveManager_FileSet-AdLogs"="{parameter "File/Log Location" of action}" on "{now}" for client
+setting "_BESClient_ArchiveManager_SendAll"="1" on "{now}" for client
+archive now
+]]></ActionScript>
+</DefaultAction>
+	</Task>
+</BES>
