@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>~~Delete Expired and Stopped Actions</Title>
+		<Description><![CDATA[<P><STRONG><FONT size=3>Action&nbsp;Parameters:</FONT></STRONG></P>
+<P>&nbsp;<INPUT onblur="if (this.value == '') {this.value = 'OP Name';}" id=RemoteOP onfocus="if (this.value == 'OP Name') {this.value = '';}" title="Enter the Exporting IEM Server Operator Name" value="OP Name" name=RemoteOP>&nbsp;<FONT color=#0080ff><STRONG>&lt;&lt;&nbsp;</STRONG></FONT> Enter the&nbsp;BigFix Master Operator Name<BR>&nbsp;<INPUT id=RemoteOPPass title="Enter the Exporting IEM Server Operator Password" type=password name=RemoteOPPass>&nbsp;&nbsp; <FONT color=#0080ff><STRONG>&lt;&lt;</STRONG></FONT>&nbsp; Enter the&nbsp;BigFix Master&nbsp;Operator Password<BR><BR><INPUT onblur="if (this.value == '') {this.value = 'RunAs';}" id=RunAs onfocus="if (this.value == 'RunAs') {this.value = '';}" title="Enter the Run As User Name" value=RunAsUserName name=RunAs>&nbsp;<FONT color=#0080ff><STRONG>&lt;&lt;&nbsp;</STRONG></FONT> Enter the&nbsp;Run As User Name (Note; you will be prompted for this users password during deployment)<BR><BR><INPUT onblur="if (this.value == '') {this.value = 'nDays';}" id=nDays onfocus="if (this.value == 'nDays') {this.value = '';}" title="Age in Days" value=30 name=nDays>&nbsp;<FONT color=#0080ff><STRONG>&lt;&lt;&nbsp;</STRONG></FONT> Enter the age in days of stopped/expired actions&nbsp;&nbsp;<BR><script>
+			document.body.ontakeaction = function() {
+				var theRemoteOP = document.getElementById( "RemoteOP" ).value;
+				var theRemoteOPPass = document.getElementById( "RemoteOPPass" ).value;
+				var theRunAs = document.getElementById( "RunAs" ).value;
+				var thenDays = document.getElementById( "nDays" ).value;
+				TakeSecureFixletAction( Relevance('id of current fixlet'), Relevance('id of current bes site'), "Action1", {}, { RemoteOP: theRemoteOP , RemoteOPPass: theRemoteOPPass , RunAs: theRunAs, nDays: thenDays } );
+				return false;
+			}
+			</script><BR><STRONG>_____________________________________________________________________________________________________</STRONG> </P>
+<P><STRONG>Description:</STRONG></P>
+<P>This task&nbsp;can be used to automate the removal of&nbsp;stopped and expired actions. It runs on the root server.</P>
+<P>The targeted actions have to be either STOPPED (whose time stopped is older than&nbsp;<EM>n</EM> days from the current date) or EXPIRED (whose time issued is older than&nbsp;<EM>n</EM> days from the current date)</P>
+<P>&nbsp;</P>
+<P><STRONG><FONT color=#ff0000>** NOTE:&nbsp; Before deploying this action for the first time, you must manually use the REST CLI to login and accept the certificate. THIS ONLY HAS TO BE DONE ONCE.</FONT></STRONG></P>
+<P><STRONG><FONT color=#ff0000><BR>To do this:</FONT></STRONG></P>
+<P><STRONG><FONT color=#ff0000>1) Using the command line, browse to %Program Files (x86)%\BigFix Enterprise\BES Server\IEM CLI\<BR>2) enter iem.exe login -q --server=localhost --user=&lt;MasterOpUserName&gt; --password=&lt;MasterOpPassword&gt;<BR>3) enter Y to accept the certificate. If you are not prompted to accept the certificate, then this process has already occured.</FONT></STRONG></P>
+<P><STRONG><FONT color=#ff0000></FONT></STRONG>&nbsp;</P>]]></Description>
+		<Relevance>exists main gather service</Relevance>
+		<Relevance>(if( name of operating system starts with "Win" ) then platform id of operating system != 3 else true) AND (if exists property "in proxy agent context" then ( not in proxy agent context ) else true ) </Relevance>
+		<Relevance><![CDATA[version of client >= "9.0"]]></Relevance>
+		<Category></Category>
+		<Source>mike.english@us.ibm.com</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2018-02-10</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>bigfixme-added-time</Name>
+			<Value>Fri, 04 Apr 2014 08:05:48 GMT</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>bigfixme-modification-time</Name>
+			<Value>Fri, 04 Apr 2014 08:05:48 GMT</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>bigfixme-keywords</Name>
+			<Value>Export, Expired, Actions</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sat, 10 Feb 2018 19:42:30 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[//Check for C:\export
+if {not exist folder "c:\export"}
+	dos mkdir "c:\export"
+endif
+
+delete "c:\export\expiredActionIDs.txt"
+delete "c:\export\expiredActions.xml"
+delete __appendfile
+
+//Get expired action IDs
+appendfile {preceding text of last "\" of (expand environment string of (image path of service "FILLDB")) & "\IEM CLI\iem.exe%22"} login -q --server=localhost --user={parameter "RemoteOP" of action} --password={parameter "RemoteOPPass" of action}
+appendfile {preceding text of last "\" of (expand environment string of (image path of service "FILLDB")) & "\IEM CLI\iem.exe%22"} get query --relevance "IDs of BES Actions whose ((state of it as lowercase = %%22expired%%22 OR state of it as lowercase = %%22stopped%%22) AND (((time stopped of it <= (now -{parameter "nDays" of action}*day)) | false) OR ((time issued of it - now <= -{parameter "nDays" of action}*day) | false)))" > """c:\export\expiredactions.xml"""
+//appendfile DEL "%~f0" 
+delete "c:\export\api.bat"
+copy __appendfile "c:\export\api.bat"
+
+override wait
+runas=localuser
+user={parameter "RunAs" of action}
+password=required
+wait "c:\export\api.bat"
+
+//Strip XML
+delete __appendfile
+appendfile {concatenation "%0d%0a" of (preceding texts of firsts "</Answer>" of (following texts of firsts "type=%22integer%22>" of (lines whose (it contains "<Answer type=%22integer%22>") of file "c:\export\expiredactions.xml")))}
+move __appendfile "c:\export\expiredActionIDs.txt"
+
+//Delete Actions
+delete __appendfile
+delete "c:\export\api2.bat"
+appendfile {preceding text of last "\" of (expand environment string of (image path of service "FILLDB")) & "\IEM CLI\iem.exe%22"} login -q --server=localhost --user={parameter "RemoteOP" of action} --password={parameter "RemoteOPPass" of action}
+appendfile for /f %%i in (C:\export\expiredActionIDs.txt) do (
+appendfile {preceding text of last "\" of (expand environment string of (image path of service "FILLDB")) & "\IEM CLI\iem.exe%22"} delete action/%%i
+appendfile )
+//appendfile DEL "%~f0" 
+//delete api2.bat 
+copy __appendfile "c:\export\api2.bat"
+
+override wait
+runas=localuser
+user={parameter "RunAs" of action}
+password=required
+wait "c:\export\api2.bat"
+//delete "c:\export\expiredActionIDs.txt"
+//delete "c:\export\expiredActions.xml"]]></ActionScript>
+			<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
+		</DefaultAction>
+	</Fixlet>
+</BES>
