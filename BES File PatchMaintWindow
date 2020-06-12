@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Property Name="Patch Maint Window" EvaluationPeriod="PT0S"><![CDATA[/** check  if any result exists i.e. if this is implemented at all **/
+(if not exists elements of it then "Not Implemented" else element of it) of set of 
+
+/** check for exclusion **/
+(if item 0 of it != "none" then "Excluded" else 
+
+/** put results in a set and check for a Yes result**/
+(if exists element whose (it = "Yes") of it then "Yes" else "No") of set of
+
+/** check if there is a window satisfied **/
+(if item 0 of it <= now AND  (item 0 of it + item 1 of it) >= now  then "Yes" else "No") of 
+
+/** build Tuple from values in  form (MaintWindow Start time, duration )**/
+(((1 + 7*(it as integer - 1) of item 1 of item 1 of it + ((it as day_of_week) of item 2 of item 1 of it - day_of_week of item 0 of it)/ day) as string & " " & month of item 0 of it as three letters & " " & year of item 0 of it as string & " " & item 4 of item 1 of it as time_of_day as string & "  " & local time zone as string) as time + ((it as integer)*day) of item 3 of item 1 of it, item 5 of item 1 of it as time_of_day - item 4 of item 1 of it as time_of_day )
+
+/** due to Feb rollover - check for current and last month **/
+of ((("01 " & month of it as three letters & " " & year of it as string) as date) of (it; it - month) of current month_and_year, it)
+) 
+of
+/** list of values  **/
+(values whose (it as string = "0" OR it as string = "1" OR it = "none") of settings "BFPS_Exclusion" of client,
+substrings separated by "," whose ( (it >= 1 AND it <= 4) of  (it as integer)) of values of settings "BFPS_Patch_Week" of client,
+substrings separated by ","  whose ( exists (it as day_of_week)) of values of settings "BFPS_Patch_Day" of client,
+substrings separated by ","  whose ( (it >= 0 AND it <= 14) of  (it as integer)) of values of settings "BFPS_Patch_Offset" of client,
+values whose ( exists (it as time_of_day)) of settings "BFPS_Patch_StartTime" of client,
+values whose ( exists (it as time_of_day)) of settings "BFPS_Patch_EndTime" of client)]]></Property>
+</BES>
