@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>~~Test Port Connectivity</Title>
+		<Description><![CDATA[<P>&nbsp;This task will test port connectivity between Source and Target.&nbsp; If exit code comes back as '333' then&nbsp;port is blocked.&nbsp; If exit code '0' then connectivity was established. </P>
+<P>During deployment, you will be prompted to enter the name and port of the server you are targeting i.e.&nbsp;A Bigfix Relay. Then choose your target(s) that you will want to test port connectivity to.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Category></Category>
+		<Source>mike.english@us.ibm.com</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2018-02-10</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sat, 10 Feb 2018 17:42:01 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[action parameter query "TargetName" with description "Please enter the name of the server to test connectivity:"
+action parameter query "TargetPort" with description "Please enter the port of the server to test connectivity:"
+delete "{windows folder}\temp\psconnect.txt"
+delete "{windows folder}\temp\psconnect.ps1"
+delete __appendfile
+appendfile $socket = new-object Net.Sockets.TcpClient
+appendfile $socket.connect("{parameter "TargetName"}","{parameter "TargetPort"}")
+appendfile $socket.connected
+appendfile $socket.close()
+move __appendfile "{windows folder}\temp\psconnect.ps1"
+waithidden powershell -ExecutionPolicy Bypass -command "{windows folder}\temp\psconnect.ps1 | out-file "{windows folder}\temp\psconnect.txt"
+
+pause while {not exist file (windows folder as string & "\temp\psconnect.txt")}
+
+if {concatenation "%0d%0a" of substrings separated by "#$#" of concatenation "" of substrings separated by "%00" of concatenation "#$#" of substrings separated by "%0d%0a" of lines of file (windows folder as string & "\temp\psconnect.txt") contains "False"}
+exit 333
+endif]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
