@@ -1,0 +1,2 @@
+$DaysAgo=(Get-Date).AddDays(-90)
+Get-ADComputer -Server HERTZ1401.us.ad.hertz.com -Filter {( OperatingSystem -like '*' ) -and (LastLogonTimeStamp -gt $DaysAgo)} -Properties operatingSystem | group -Property operatingSystem | Select Name,Count 
