@@ -1,0 +1,51 @@
+<BESWebReport>
+	<Name>excel2</Name>
+	<Description></Description>
+	<Type>CustomReport</Type>
+	<Source></Source>
+	<Data>&lt;html&gt;
+&lt;head&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;table border = "1"&gt;
+&lt;?relevance
+tr of (th of "ID" &amp; th of "Computer Name" &amp; th of "Agent Version" &amp; th of "IP Address") &amp;
+(concatenation of trs of  
+(	td of (item 0 of it as string) &amp;
+	td of (item 1 of it as string) &amp;
+	td of (item 2 of it as string) &amp;
+	td of (item 3 of it as string)
+)
+of (
+	(if (exists result (item 0 of it, item 1 of it) and 
+		 exists values of result (item 0 of it, item 1 of it) ) 
+		then (values of result (item 0 of it, item 1 of it)) 
+		else ("&lt;none&gt;")), 
+	(if (exists result (item 0 of it, item 2 of it) and 
+		 exists values of result (item 0 of it, item 2 of it) ) 
+		then (values of result (item 0 of it, item 2 of it)) 
+		else ("&lt;none&gt;")), 
+	(if (exists result (item 0 of it, item 3 of it) and 
+		 exists values of result (item 0 of it, item 3 of it) ) 
+		then (values of result (item 0 of it, item 3 of it)) 
+		else ("&lt;none&gt;")), 
+	(if (exists result (item 0 of it, item 4 of it) and 
+		 exists values of result (item 0 of it, item 4 of it) ) 
+		then (values of result (item 0 of it, item 4 of it)) 
+		else ("&lt;none&gt;"))) 
+of (
+	bes computers, 
+	bes property "ID",
+	bes property "Computer Name",
+	bes property "Agent Version",
+	bes property whose (name of it = "IP Address" and id of it = (2299650688, 19, 1)))
+)
+?&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</Data>
+	<Doctype></Doctype>
+	<URLParameters>#filterManager=%7b%22filterName%22:%22%22,%22filterID%22:%22%22%7d</URLParameters>
+	<SourcePage>CustomReport</SourcePage>
+</BESWebReport>

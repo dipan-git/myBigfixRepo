@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<SingleAction>
+		<Title>Configure Self-Service Application test</Title>
+		<Relevance><![CDATA[((((if exists property "in proxy agent context" then (not in proxy agent context) else true)) AND (version of client >= "9.5.3.211")) AND (((windows of it) AND (version of it >= "6.1") AND (platform id of it != 3)) of operating system)) AND (exists file "msiexec.exe" whose (version of it >= "2.0") of system folder)]]></Relevance>
+		<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[parameter "BESUISupportFolder" = "{pathname of parent folder of client folder of current site & "\__UISupport\"}" 
+folder delete "{parameter "BESUISupportFolder"}"
+folder create "{parameter "BESUISupportFolder"}"
+parameter "DownloadDir" = "{pathname of (folder "__Download" of client folder of current site)}"
+
+prefetch dashboard0.tmp sha1:2823d707ac8adc0eb9f86ace629cdf690ad42d09 size:79612 http://software.bigfix.com/download/PowerManagement/ClientSideDashboard/3.0/PowerManagementClientUI_1.4.0.tmp sha256:598c6e309273a1d30d832ef98cd3f20241490eb2cc801efd6ca38541f0c4c6af
+
+folder delete "{pathname of (file "dashboard0.tmp" of download folder)}.folder"
+folder create "{pathname of (file "dashboard0.tmp" of download folder)}.folder"
+extract dashboard0.tmp "{pathname of (file "dashboard0.tmp" of download folder)}.folder"
+if {((exists file (pathname of (folder "__Download" of client folder of current site) as string & "\dashboard0.tmp.folder\_technician.html")) AND (not exists file (pathname of (folder "__Download" of client folder of current site) as string & "\dashboard0.tmp.folder\_dashboard.html")))}
+copy "{pathname of (folder "__Download" of client folder of current site) as string & "\dashboard0.tmp.folder\_technician.html"}" "{pathname of (folder "__Download" of client folder of current site) as string & "\dashboard0.tmp.folder\_dashboard.html"}"
+delete "{pathname of (folder "__Download" of client folder of current site) as string & "\dashboard0.tmp.folder\_technician.html"}"
+endif
+
+delete "{pathname of (file "dashboard0.tmp" of download folder)}"
+
+parameter "dashboard0.tmp.BESDataDir" = "{pathname of parent folder of client folder of site "actionsite" & "\__UISupport\Your Power Footprint"}" 
+
+folder create "{parameter "dashboard0.tmp.BESDataDir"}"
+
+// Create directory __UISupport and copy the files downloaded to the directory
+delete __createfile 
+delete ui_install.bat
+createfile until END_UI_INSTALL 
+@ECHO OFF 
+mkdir "{parameter "dashboard0.tmp.BESDataDir"}" > NUL 2>NUL
+copy "__Download\dashboard0.tmp.folder\*.*"  "{parameter "dashboard0.tmp.BESDataDir"}" > NUL 2>NUL
+
+END_UI_INSTALL
+move __createfile ui_install.bat 
+waithidden ui_install.bat  
+
+parameter "tempdir" = "{client folder of current site}\..\..\SSATemp"
+parameter "deployssa" = "{((NOT (exists setting "_BESClient_ActionManager_UIEnableMode" whose (value of it as lowercase = "none") of client)) AND (((NOT exists key whose ((it as string = "IBM BigFix Self Service Application" OR it as string = "IBM BigFix Self-Service Application") of value "DisplayName" of it) of it) OR (exists key whose (((it as string = "IBM BigFix Self Service Application" OR it as string = "IBM BigFix Self-Service Application") of value "DisplayName" of it) AND (NOT exists value "DisplayVersion" of it)) of it)) of key "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of x32 registry))}"
+parameter "upgradessa" = "{((exists key whose ((it as string = "IBM BigFix Self Service Application" OR it as string = "IBM BigFix Self-Service Application") of value "DisplayName" of it AND value "DisplayVersion" of it as string as version < ("2.1.0" as version)) of key "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of x32 registry))}"
+parameter "shortcutFolder" = "{(root folder of drives of system folders) as string & "\ProgramData\Microsoft\Windows\Start Menu\Programs\IBM BigFix"}"
+parameter "shortcutFile" = "{(parameter "shortcutFolder") & "\IBM BigFix Self-Service Application.lnk"}"
+parameter "installdir" = "{pathname of  parent folder of parent folder of client}\BigFix Self Service Application"
+parameter "configdir" = "{(parameter "installdir") & "\resources"}"
+
+if {((parameter "deployssa") = "True") OR ((parameter "upgradessa") = "True")}
+if {x64 of operating system}
+	prefetch bigfixssa.exe sha1:ed41e2e516741c525b3b43f7592da6c66153c67e size:60032905 http://software.bigfix.com/download/bes/ssa/IBM-BigFix-Self-Service-Application-2.1.0-64.exe sha256:3016b2b2119aafcd24687efac9452ced75ee2ea3126152f3eaa3903bfa827e79
+else
+	prefetch bigfixssa.exe sha1:2c535e0d7a337f1e8755db366601b6d3562d6973 size:50542715 http://software.bigfix.com/download/bes/ssa/IBM-BigFix-Self-Service-Application-2.1.0-32.exe sha256:b41f4a17dcc25d2584114acfbe8420b1cd0eb4d29090c78790bd030396058c7e
+endif
+
+delete __Local\Get\bigfixssa.exe
+
+move __Download\bigfixssa.exe __Local\Get\bigfixssa.exe
+
+endif
+
+parameter "iconFile" = "{parameter "configdir"}\icon.ico"
+parameter "tempIconFile" = "{parameter "tempdir"}\icon.ico"
+folder create "{parameter "tempdir"}"
+delete "{parameter "tempIconFile"}"
+delete "{parameter "iconFile"}"
+
+
+parameter "configfile" = "{parameter "configdir"}\ssa.config"
+delete __appendfile
+delete "{parameter "tempdir"}\ssa.config"
+if {exists file (parameter "configfile")}
+  appendfile {concatenation "%0d%0a" of (lines of file (parameter "configfile")) whose (NOT (it contains "applicationName" OR it contains "helpMessage" OR it contains "historyDays" OR it contains "hideSystemActions" OR it contains "customBrandColor"))}
+  delete "{parameter "configfile"}.backup"
+  copy "{parameter "configfile"}" "{parameter "configFile"}.backup"
+  delete "{parameter "configfile"}"
+else
+  appendfile logCleanRate: 14
+endif
+appendfile applicationName: IBM%20BigFix%20Self-Service%20Application
+appendfile historyDays: 30
+appendfile hideSystemActions: true
+appendfile customBrandColor: #1c8811
+
+copy __appendfile "{parameter "tempdir"}\ssa.config"
+
+delete __createfile
+delete "{parameter "tempdir"}\changeAppName.bat"
+createfile until __END_CHANGE_NAME__
+@echo off
+set SCRIPT="%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
+echo Set oWS = WScript.CreateObject("WScript.Shell") > %SCRIPT%
+echo sLinkFile = "{parameter "shortcutFile"}" >> %SCRIPT%
+echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
+echo oLink.TargetPath = "{parameter "installdir"}\BigFixSSA.exe" >> %SCRIPT%
+echo oLink.Save >> %SCRIPT%
+cscript /nologo %SCRIPT%
+del %SCRIPT%
+__END_CHANGE_NAME__
+move __createfile "{parameter "tempdir"}\changeAppName.bat"
+
+if {exists file (parameter "tempIconFile") OR exists file (parameter "iconFile")}
+  parameter "iconPath" = "{parameter "iconFile"}"
+else
+  parameter "iconPath" = "{parameter "installdir"}\BigFixSSA.exe"
+endif
+delete __createfile
+delete "{parameter "tempdir"}\changeAppIcon.bat"
+createfile until __END_CHANGE_ICON__
+@echo off
+set SCRIPT="%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
+echo Set oWS = WScript.CreateObject("WScript.Shell") > %SCRIPT%
+echo Set oLink = oWS.CreateShortcut("{parameter "shortcutFile"}") >> %SCRIPT%
+echo oLink.IconLocation = "{parameter "iconPath"}" >> %SCRIPT%
+echo oLink.Save >> %SCRIPT%
+cscript /nologo %SCRIPT%
+del %SCRIPT%
+__END_CHANGE_ICON__
+move __createfile "{parameter "tempdir"}\changeAppIcon.bat"
+
+if {(parameter "deployssa") = "True"}
+wait __Local\Get\bigfixssa.exe /s /v"/qn INSTALLDIR=\"{parameter "installdir"}\"  /norestart MSIRESTARTMANAGERCONTROL=Disable"
+
+setting "_BESClient_ActionManager_SelfServiceApp"="%22{parameter "installdir" & "\BigFixSSA.exe"}%22" on "{now}" for client
+
+if {exists setting "_BESClient_ActionManager_HideProgressTab" whose (value of it = "0") of client}
+	setting "_BESClient_ActionManager_HideProgressTab_backup"="0" on "{now}" for client
+endif
+setting "_BESClient_ActionManager_HideProgressTab"="1" on "{now}" for client
+
+if {exists setting "_BESClient_ActionManager_TrayMode" whose (value of it as lowercase != "notray") of client}
+	setting "_BESClient_ActionManager_TrayMode_backup"="{value of setting "_BESClient_ActionManager_TrayMode" of client}" on "{now}" for client
+endif
+setting "_BESClient_ActionManager_TrayMode"="NoTray" on "{now}" for client
+
+if {version of client >= "9.5.7.90"}
+	setting "_BESClient_ActionManager_SSAv2Mode"="SSAV2UIDashboard" on "{now}" for client
+endif
+
+copy "{parameter "tempdir"}\ssa.config" "{parameter "configfile"}"
+
+delete __appendfile
+delete clientRestart.bat
+appendfile @echo off
+if {exists folder (parameter "shortcutFolder")}
+  if {((not exists file "IBM BigFix Self-Service Application.lnk" of it) and (number of pathnames of files whose ((name of it contains ".lnk") and ((pathname of shortcut of it as string) = ((parameter "installdir") & "\BigFixSSA.exe"))) of it > 0)) of folder (parameter "shortcutFolder")}
+    parameter "delcommand" = "{concatenation "%22%0d%0a del %22" of pathnames of files whose ((name of it contains ".lnk") and ((pathname of shortcut of it as string) = ((parameter "installdir") & "\BigFixSSA.exe"))) of folder (parameter "shortcutFolder")}"
+    appendfile {"del " & "%22" & (parameter "delcommand") & "%22"}
+    appendfile call "{parameter "tempdir"}\changeAppName.bat"
+  endif
+  if {exists file (parameter "iconFile")}
+    appendfile call "{parameter "tempdir"}\changeAppIcon.bat"
+  endif
+endif
+appendfile rmdir /S /Q "{parameter "tempdir"}"
+appendfile net stop BESClient
+appendfile timeout 5 > NUL
+appendfile net start BESClient
+move __appendfile clientRestart.bat
+runhidden clientRestart.bat
+
+
+else
+copy "{parameter "tempdir"}\ssa.config" "{parameter "configfile"}"
+
+if {(parameter "upgradessa") = "True"}
+setting "_BESClient_ActionManager_SelfServiceApp"="%22{parameter "installdir" & "\BigFixSSA.exe"}%22" on "{now}" for client
+
+if {version of client >= "9.5.7.90"}
+	setting "_BESClient_ActionManager_SSAv2Mode"="SSAV2UIDashboard" on "{now}" for client
+endif
+
+delete __appendfile
+delete upgradessa.bat
+appendfile @echo off
+appendfile net stop BESClient
+appendfile timeout 5 > NUL
+appendfile taskkill /IM "BigFixSSA.exe" /T /F
+appendfile __Local\Get\bigfixssa.exe /s /v"/qn INSTALLDIR=\"{parameter "installdir"}\"  /norestart MSIRESTARTMANAGERCONTROL=Disable"
+if {exists folder (parameter "shortcutFolder")}
+  if {((not exists file "IBM BigFix Self-Service Application.lnk" of it) and (number of pathnames of files whose ((name of it contains ".lnk") and ((pathname of shortcut of it as string) = ((parameter "installdir") & "\BigFixSSA.exe"))) of it > 0)) of folder (parameter "shortcutFolder")}
+    parameter "delcommand" = "{concatenation "%22%0d%0a del %22" of pathnames of files whose ((name of it contains ".lnk") and ((pathname of shortcut of it as string) = ((parameter "installdir") & "\BigFixSSA.exe"))) of folder (parameter "shortcutFolder")}"
+    appendfile {"del " & "%22" & (parameter "delcommand") & "%22"}
+    appendfile call "{parameter "tempdir"}\changeAppName.bat"
+  endif
+  if {exists file (parameter "iconFile")}
+    appendfile call "{parameter "tempdir"}\changeAppIcon.bat"
+  endif
+endif
+appendfile rmdir /S /Q "{parameter "tempdir"}"
+appendfile net start BESClient
+move __appendfile upgradessa.bat
+runhidden upgradessa.bat
+
+else
+delete __appendfile
+delete changeconfig.bat
+appendfile @echo off
+appendfile net stop BESClient
+appendfile timeout 5 > NUL
+appendfile taskkill /IM "BigFixSSA.exe" /T /F
+if {exists folder (parameter "shortcutFolder")}
+  if {((not exists file "IBM BigFix Self-Service Application.lnk" of it) and (number of pathnames of files whose ((name of it contains ".lnk") and ((pathname of shortcut of it as string) = ((parameter "installdir") & "\BigFixSSA.exe"))) of it > 0)) of folder (parameter "shortcutFolder")}
+    parameter "delcommand" = "{concatenation "%22%0d%0a del %22" of pathnames of files whose ((name of it contains ".lnk") and ((pathname of shortcut of it as string) = ((parameter "installdir") & "\BigFixSSA.exe"))) of folder (parameter "shortcutFolder")}"
+    appendfile {"del " & "%22" & (parameter "delcommand") & "%22"}
+    appendfile call "{parameter "tempdir"}\changeAppName.bat"
+  endif
+  appendfile call "{parameter "tempdir"}\changeAppIcon.bat"
+endif
+appendfile rmdir /S /Q "{parameter "tempdir"}"
+appendfile net start BESClient
+move __appendfile changeconfig.bat
+runhidden changeconfig.bat
+
+endif
+
+endif
+]]></ActionScript>
+		<SuccessCriteria Option="CustomRelevance"><![CDATA[(((NOT (exists setting "_BESClient_ActionManager_UIEnableMode" whose (value of it as lowercase = "none") of client)) AND (((NOT exists key whose ((it as string = "IBM BigFix Self Service Application" OR it as string = "IBM BigFix Self-Service Application") of value "DisplayName" of it) of it) OR (exists key whose (((it as string = "IBM BigFix Self Service Application" OR it as string = "IBM BigFix Self-Service Application") of value "DisplayName" of it) AND (NOT exists value "DisplayVersion" of it)) of it)) of key "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of x32 registry))) OR (((exists key whose ((it as string = "IBM BigFix Self Service Application" OR it as string = "IBM BigFix Self-Service Application") of value "DisplayName" of it AND value "DisplayVersion" of it as string as version < ("2.1.0" as version)) of key "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of x32 registry)))]]></SuccessCriteria>
+		<Settings>
+			<PreActionShowUI>false</PreActionShowUI>
+			<HasRunningMessage>false</HasRunningMessage>
+			<HasTimeRange>false</HasTimeRange>
+			<HasStartTime>false</HasStartTime>
+			<HasEndTime>true</HasEndTime>
+			<EndDateTimeLocalOffset>P2D</EndDateTimeLocalOffset>
+			<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+			<UseUTCTime>false</UseUTCTime>
+			<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+			<ActiveUserType>AllUsers</ActiveUserType>
+			<HasWhose>false</HasWhose>
+			<PreActionCacheDownload>false</PreActionCacheDownload>
+			<Reapply>false</Reapply>
+			<HasReapplyLimit>true</HasReapplyLimit>
+			<ReapplyLimit>3</ReapplyLimit>
+			<HasReapplyInterval>false</HasReapplyInterval>
+			<HasRetry>false</HasRetry>
+			<HasTemporalDistribution>false</HasTemporalDistribution>
+			<ContinueOnErrors>true</ContinueOnErrors>
+			<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+			<IsOffer>false</IsOffer>
+		</Settings>
+		<SettingsLocks>
+			<ActionUITitle>false</ActionUITitle>
+			<PreActionShowUI>false</PreActionShowUI>
+			<PreAction>
+				<Text>false</Text>
+				<AskToSaveWork>false</AskToSaveWork>
+				<ShowActionButton>false</ShowActionButton>
+				<ShowCancelButton>false</ShowCancelButton>
+				<DeadlineBehavior>false</DeadlineBehavior>
+				<ShowConfirmation>false</ShowConfirmation>
+			</PreAction>
+			<HasRunningMessage>false</HasRunningMessage>
+			<RunningMessage>
+				<Text>false</Text>
+			</RunningMessage>
+			<TimeRange>false</TimeRange>
+			<StartDateTimeOffset>false</StartDateTimeOffset>
+			<EndDateTimeOffset>false</EndDateTimeOffset>
+			<DayOfWeekConstraint>false</DayOfWeekConstraint>
+			<ActiveUserRequirement>false</ActiveUserRequirement>
+			<ActiveUserType>false</ActiveUserType>
+			<Whose>false</Whose>
+			<PreActionCacheDownload>false</PreActionCacheDownload>
+			<Reapply>false</Reapply>
+			<ReapplyLimit>false</ReapplyLimit>
+			<RetryCount>false</RetryCount>
+			<RetryWait>false</RetryWait>
+			<TemporalDistribution>false</TemporalDistribution>
+			<ContinueOnErrors>false</ContinueOnErrors>
+			<PostActionBehavior>
+				<Behavior>false</Behavior>
+				<AllowCancel>false</AllowCancel>
+				<Deadline>false</Deadline>
+				<Title>false</Title>
+				<Text>false</Text>
+			</PostActionBehavior>
+			<IsOffer>false</IsOffer>
+			<AnnounceOffer>false</AnnounceOffer>
+			<OfferCategory>false</OfferCategory>
+			<OfferDescriptionHTML>false</OfferDescriptionHTML>
+		</SettingsLocks>
+		<IsUrgent>false</IsUrgent>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{"size":"60032905","icon":"data:image/png;base64,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"}</Value>
+		</MIMEField>
+	</SingleAction>
+</BES>
