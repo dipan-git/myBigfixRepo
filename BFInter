@@ -1,0 +1,55 @@
+1. Wait vs waithidden
+
+	wait
+	The wait command behaves the same as the run command, except that it waits for
+	the completion of the process or program before continuing.
+	Syntax
+	wait <command line>
+
+	Example
+	wait "scandskw.exe"
+	Runs the scandskw program and waits for the program to complete before
+	continuing with the action script. The use of quotes is recommended practice, and
+	necessary if there are spaces in the file name.
+
+	waithidden
+	This command is similar to the runhidden command and uses CreateProcess to
+	execute a command in a hidden window. It hides the window by setting the
+	STARTUPINFO dwFlag to STARTF_USESHOWWINDOW and setting
+	wShowWindow to SW_HIDE. This action waits for the completion of the process
+	before continuing with subsequent action commands.
+	Syntax
+	waithidden <command line>
+	Examples
+	waithidden "{pathname of regapp "notepad.exe"}"
+	waithidden "c:\winnt\ftp.exe" ftp.myurl.net
+	waithidden wscript /e:vbs x.vbs arg1 arg2
+	These examples show how you might run a script in a hidden window and pass it
+	some arguments. Quotes around the command line are recommended, and
+	necessary if there are spaces in the file names.
+
+2. Check file existense (relevance)
+
+	exists file "xyz" of folder "c:\"
+
+	exists file "C:\TransactionTree\eReceipts\TTProcess\TTProcessNet.exe" whose (version of it < "5.1.0.5")
+
+3. Find a file in the entire machine with an extension eg. "*.exe" and find display it's location
+
+	pathnames of it whose (name of it contains ".exe") of decendents of folders of drive whose (type of it = "DRIVE_FIXED")
+
+4. Files generated for software inventory upload after scan and location
+C:\Program Files (x86)\BigFix Enterprise\BES Client\LMT\CIT
+
+5. BESAdminDebugOut.txt location
+C:\Users\{USERNAME}\AppData\Local\BigFix\BESAdminDebugOut.txt
+
+When BESAdmin is invoked by a Fixlet (or run by the LocalSystem user), the log file is
+C:\Windows\System32\config\systemprofile\AppData\Local\BigFix\BESAdminDebugOut.txt
+
+6. BFI Scanner install location
+
+Windows: C:\Program Files\tivoli\cit 
+UNIX: /opt/tivoli/cit 
+
+7. Software Distribition: Embed URL in relevance and download/Pre-cache on the target machine
